@@ -16,8 +16,13 @@ const signup = async (formData) => {
     if (json.err) {
       throw new Error(json.err);
     }
+    if (json.token) {
+        //!builtin, no need to import, add this line to store the JWT token in localStorage
+        localStorage.setItem('token', json.token);
+      }
     console.log(json)
     return json;
+    
   } catch (err) {
     console.log(err);
     throw err;
@@ -39,6 +44,9 @@ const signin = async (user) => {
       }
     // This part of the code splits the JWT string into its three components using the dot as a delimiter and selects the second element (index 1), which is the payload containing the user data.
       if (json.token) {
+        //!builtin, no need to import, add this line to store the JWT token in localStorage
+        localStorage.setItem('token', json.token);
+
         const user = JSON.parse(atob(json.token.split('.')[1]));
         console.log(user)
         return user;
@@ -48,11 +56,25 @@ const signin = async (user) => {
       throw err;
     }
   };
-  
+
+  const getUser = () =>  {
+    //localstorage.getItem("name of item")
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    const user = JSON.parse(atob(token.split('.')[1]));
+    return user;
+  }
+
+  const signout = () => {
+    localStorage.removeItem('token');
+  };
+
 
   export { 
     signup, 
-    signin };
+    signin,
+    getUser,
+    signout };
   
 
 
